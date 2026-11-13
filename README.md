@@ -5,10 +5,10 @@ visual key mapping, macros, per-game profiles with automatic switching, up to 8 
 profile with the indicator LEDs, and backlight control. It installs no keyboard filter driver
 and does not touch Razer Synapse 4.
 
-**Status: early.** The UI, profiles, macros and lighting (backlight, pulsate) have been
-confirmed on a real Tartarus. Hook mode was reworked after a first hardware test and Direct
-mode has not been exercised on hardware yet; the Log on the Settings tab shows what the input
-engine is doing.
+**Status: early, but working.** Confirmed on a real Tartarus: key mapping in Direct mode
+(WinUSB set up with Zadig), profiles, macros, and lighting (backlight, pulsate). Hook mode was
+reworked after a first hardware test and has not been re-tested since. The Log on the Settings
+tab shows what the input engine is doing.
 
 ## Run it
 
