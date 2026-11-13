@@ -1,0 +1,289 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="TartarusStudio.App.MainWindow"
+        Title="Tartarus Studio 0.3" Icon="/Assets/icon.png"
+        Width="1220" Height="780" MinWidth="1080" MinHeight="700"
+        Background="#121416" WindowStartupLocation="CenterScreen">
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- Header -->
+    <Border Grid.Row="0" Background="#181B1D" Padding="18,12">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+          <Image Source="/Assets/icon.png" Width="24" Height="24" />
+          <TextBlock Text="Tartarus Studio" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center" ToolTip.Tip="Keymap indicator LEDs on the keypad">
+            <Ellipse x:Name="LedDotR" Width="10" Height="10" />
+            <Ellipse x:Name="LedDotG" Width="10" Height="10" />
+            <Ellipse x:Name="LedDotB" Width="10" Height="10" />
+          </StackPanel>
+          <TextBlock x:Name="ActiveText" VerticalAlignment="Center" />
+          <ToggleSwitch x:Name="MappingSwitch" OnContent="Mapping on" OffContent="Mapping paused" IsChecked="True" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" ColumnDefinitions="250,*" Margin="12">
+
+      <!-- Profiles -->
+      <Border Classes="panel" Margin="0,0,12,0">
+        <Grid RowDefinitions="Auto,*,Auto,Auto">
+          <TextBlock Classes="h" Text="PROFILES" Margin="0,0,0,6" />
+          <ListBox x:Name="ProfileList" Grid.Row="1" />
+          <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
+            <Button x:Name="NewProfileBtn" Content="New" />
+            <Button x:Name="DuplicateProfileBtn" Content="Duplicate" />
+            <Button x:Name="DeleteProfileBtn" Content="Delete" />
+          </StackPanel>
+          <StackPanel Grid.Row="3">
+            <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,6,0,0">
+              <Button x:Name="ImportProfileBtn" Content="Import…" />
+              <Button x:Name="ExportProfileBtn" Content="Export…" />
+            </StackPanel>
+            <TextBlock Classes="h" Text="NAME" />
+            <TextBox x:Name="ProfileNameBox" />
+            <CheckBox x:Name="DefaultProfileBox" Content="Default profile" Margin="0,6,0,0"
+                      ToolTip.Tip="Used whenever the foreground program is not linked to any profile" />
+            <TextBlock Classes="h" Text="LINKED PROGRAMS" />
+            <ListBox x:Name="ProgramList" Height="110" />
+            <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,6,0,0">
+              <Button x:Name="AddProgramBtn" Content="Add .exe…" />
+              <Button x:Name="RemoveProgramBtn" Content="Remove" />
+            </StackPanel>
+            <TextBlock Classes="hint" Margin="0,8,0,0"
+                       Text="The profile activates while one of these programs is in the foreground." />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <TabControl Grid.Column="1" x:Name="Tabs" Padding="0,10,0,0">
+
+        <!-- Keypad -->
+        <TabItem Header="Keypad">
+          <Grid ColumnDefinitions="*,320" RowDefinitions="Auto,*">
+            <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8" Margin="0,0,0,10">
+              <TextBlock Text="Keymap" VerticalAlignment="Center" />
+              <ComboBox x:Name="KeymapBox" Width="170" />
+              <Button x:Name="AddKeymapBtn" Content="+" ToolTip.Tip="Add a keymap (up to 8)" />
+              <Button x:Name="RemoveKeymapBtn" Content="−" ToolTip.Tip="Remove this keymap" />
+              <TextBox x:Name="KeymapNameBox" Width="150" Watermark="Keymap name" />
+              <TextBlock Text="Indicator" VerticalAlignment="Center" Margin="12,0,0,0" />
+              <CheckBox x:Name="LedRBox" Content="Red" />
+              <CheckBox x:Name="LedGBox" Content="Green" />
+              <CheckBox x:Name="LedBBox" Content="Blue" />
+            </StackPanel>
+
+            <Border Grid.Row="1" Classes="panel" Margin="0,0,12,0">
+              <Viewbox Stretch="Uniform" MaxWidth="760">
+                <Canvas x:Name="KeyCanvas" Width="580" Height="420">
+                  <Border Canvas.Left="8" Canvas.Top="10" Width="386" Height="254" CornerRadius="18" Background="#16191B" BorderBrush="#2A2F33" BorderThickness="1" />
+                  <Border Canvas.Left="402" Canvas.Top="134" Width="170" Height="272" CornerRadius="18" Background="#16191B" BorderBrush="#2A2F33" BorderThickness="1" />
+                  <Border Canvas.Left="40" Canvas.Top="282" Width="320" Height="124" CornerRadius="40" Background="#16191B" BorderBrush="#2A2F33" BorderThickness="1" />
+                  <TextBlock Canvas.Left="150" Canvas.Top="336" Text="wrist rest" Foreground="#3A4146" />
+                </Canvas>
+              </Viewbox>
+            </Border>
+
+            <Border Grid.Row="1" Grid.Column="1" Classes="panel">
+              <ScrollViewer>
+                <StackPanel>
+                  <TextBlock x:Name="SelKeyTitle" Text="Select a key" FontSize="16" FontWeight="SemiBold" />
+                  <TextBlock x:Name="SelKeyHint" Classes="hint" Text="Click a key on the keypad to change what it does." Margin="0,4,0,0" />
+                  <StackPanel x:Name="EditorPanel" IsVisible="False">
+                    <TextBlock Classes="h" Text="ASSIGNMENT" />
+                    <ComboBox x:Name="ActionTypeBox" HorizontalAlignment="Stretch" />
+
+                    <StackPanel x:Name="PanelKey">
+                      <TextBlock Classes="h" Text="KEY" />
+                      <ComboBox x:Name="KeyBox" HorizontalAlignment="Stretch" MaxDropDownHeight="320" />
+                      <WrapPanel Margin="0,6,0,0">
+                        <CheckBox x:Name="ModCtrl" Content="Ctrl" Margin="0,0,12,0" />
+                        <CheckBox x:Name="ModShift" Content="Shift" Margin="0,0,12,0" />
+                        <CheckBox x:Name="ModAlt" Content="Alt" Margin="0,0,12,0" />
+                        <CheckBox x:Name="ModWin" Content="Win" />
+                      </WrapPanel>
+                      <TextBox x:Name="CaptureBox" IsReadOnly="True" Margin="0,6,0,0" Watermark="…or click here and press the combo" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="PanelMouse">
+                      <TextBlock Classes="h" Text="MOUSE FUNCTION" />
+                      <ComboBox x:Name="MouseBox" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="PanelMacro">
+                      <TextBlock Classes="h" Text="MACRO" />
+                      <ComboBox x:Name="MacroBox" HorizontalAlignment="Stretch" PlaceholderText="Record one in the Macros tab" />
+                      <TextBlock Classes="h" Text="PLAYBACK" />
+                      <ComboBox x:Name="PlaybackBox" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="PanelText">
+                      <TextBlock Classes="h" Text="TEXT TO TYPE" />
+                      <TextBox x:Name="TextValueBox" AcceptsReturn="False" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="PanelLaunch">
+                      <TextBlock Classes="h" Text="PROGRAM, FILE OR URL" />
+                      <Grid ColumnDefinitions="*,Auto">
+                        <TextBox x:Name="PathBox" />
+                        <Button x:Name="BrowsePathBtn" Grid.Column="1" Content="…" Margin="6,0,0,0" />
+                      </Grid>
+                      <TextBlock Classes="h" Text="ARGUMENTS" />
+                      <TextBox x:Name="ArgsBox" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="PanelKeymap">
+                      <TextBlock Classes="h" Text="SWITCH" />
+                      <ComboBox x:Name="SwitchModeBox" HorizontalAlignment="Stretch" />
+                      <TextBlock x:Name="KeymapTargetLabel" Classes="h" Text="TARGET KEYMAP" />
+                      <ComboBox x:Name="KeymapTargetBox" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="PanelProfile">
+                      <TextBlock Classes="h" Text="TARGET PROFILE" />
+                      <ComboBox x:Name="ProfileTargetBox" HorizontalAlignment="Stretch" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,16,0,0">
+                      <Button x:Name="ApplyActionBtn" Content="Apply" Classes="accent" />
+                      <Button x:Name="ResetActionBtn" Content="Reset to default" />
+                    </StackPanel>
+                    <TextBlock x:Name="EditorNote" Classes="hint" Margin="0,10,0,0" />
+                  </StackPanel>
+                </StackPanel>
+              </ScrollViewer>
+            </Border>
+          </Grid>
+        </TabItem>
+
+        <!-- Macros -->
+        <TabItem Header="Macros">
+          <Grid ColumnDefinitions="240,*">
+            <Border Classes="panel" Margin="0,0,12,0">
+              <Grid RowDefinitions="*,Auto">
+                <ListBox x:Name="MacroList" />
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="6" Margin="0,8,0,0">
+                  <Button x:Name="NewMacroBtn" Content="New" />
+                  <Button x:Name="DeleteMacroBtn" Content="Delete" />
+                </StackPanel>
+              </Grid>
+            </Border>
+            <Border Grid.Column="1" Classes="panel">
+              <Grid x:Name="MacroEditor" RowDefinitions="Auto,Auto,*,Auto" IsEnabled="False">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <TextBlock Text="Name" VerticalAlignment="Center" />
+                  <TextBox x:Name="MacroNameBox" Width="240" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,10">
+                  <ToggleButton x:Name="RecordBtn" Content="● Record" />
+                  <CheckBox x:Name="RecordDelaysBox" Content="Record delays" IsChecked="True" />
+                  <TextBlock x:Name="RecordHint" Classes="hint" VerticalAlignment="Center" />
+                </StackPanel>
+                <ListBox x:Name="StepList" Grid.Row="2" />
+                <WrapPanel Grid.Row="3" Margin="0,8,0,0">
+                  <Button x:Name="StepUpBtn" Content="▲" Margin="0,0,6,0" />
+                  <Button x:Name="StepDownBtn" Content="▼" Margin="0,0,6,0" />
+                  <Button x:Name="DeleteStepBtn" Content="Delete step" Margin="0,0,6,0" />
+                  <Button x:Name="ClearStepsBtn" Content="Clear" Margin="0,0,18,0" />
+                  <TextBox x:Name="DelayBox" Width="80" Text="50" Margin="0,0,6,0" />
+                  <Button x:Name="AddDelayBtn" Content="Add / set delay (ms)" Margin="0,0,18,0" />
+                  <ComboBox x:Name="StepMouseBox" Width="110" Margin="0,0,6,0" />
+                  <Button x:Name="AddClickBtn" Content="Add click" />
+                </WrapPanel>
+              </Grid>
+            </Border>
+          </Grid>
+        </TabItem>
+
+        <!-- Lighting -->
+        <TabItem Header="Lighting">
+          <Border Classes="panel" VerticalAlignment="Top">
+            <StackPanel MaxWidth="520" HorizontalAlignment="Left">
+              <TextBlock x:Name="LightingTitle" FontSize="16" FontWeight="SemiBold" />
+              <TextBlock Classes="h" Text="BACKLIGHT BRIGHTNESS" />
+              <Grid ColumnDefinitions="*,50">
+                <Slider x:Name="BrightnessSlider" Minimum="0" Maximum="255" />
+                <TextBlock x:Name="BrightnessText" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" />
+              </Grid>
+              <CheckBox x:Name="PulsateBox" Content="Pulsate (breathing)" />
+              <Button x:Name="ApplyLightingBtn" Content="Apply to keypad" Classes="accent" Margin="0,12,0,0" />
+              <TextBlock Classes="hint" Margin="0,12,0,0"
+                         Text="Lighting is saved per profile. The three indicator LEDs are set per keymap on the Keypad tab. The original Tartarus has a single-colour backlight." />
+            </StackPanel>
+          </Border>
+        </TabItem>
+
+        <!-- Settings -->
+        <TabItem Header="Settings">
+          <ScrollViewer>
+            <Grid ColumnDefinitions="*,*">
+              <StackPanel Margin="0,0,12,0" Spacing="12">
+                <Border Classes="panel">
+                  <StackPanel>
+                    <TextBlock Text="Input engine" FontSize="16" FontWeight="SemiBold" />
+                    <RadioButton x:Name="BackendWinUsb" GroupName="backend" Content="Direct mode (WinUSB) — recommended" Margin="0,8,0,0" />
+                    <TextBlock Classes="hint" Margin="28,0,0,0"
+                               Text="The keypad stops being a Windows keyboard and this app reads it directly. Exact, works in every game, never confuses the keypad with your main keyboard. Needs the one-time setup on the right. The keypad only types while this app is running." />
+                    <RadioButton x:Name="BackendHook" GroupName="backend" Content="Hook mode — no setup, best effort" Margin="0,8,0,0" />
+                    <TextBlock Classes="hint" Margin="28,0,0,0"
+                               Text="Leaves the keypad's driver alone. Keys the keypad can produce are held for a moment until Windows reports which device sent them, then mapped (keypad) or passed on unchanged (other keyboards). The status line counts each kind." />
+                    <RadioButton x:Name="BackendOff" GroupName="backend" Content="Off" Margin="0,8,0,0" />
+                  </StackPanel>
+                </Border>
+                <Border Classes="panel">
+                  <StackPanel>
+                    <TextBlock Text="General" FontSize="16" FontWeight="SemiBold" />
+                    <CheckBox x:Name="AutoSwitchBox" Content="Switch profiles automatically with the foreground program" Margin="0,8,0,0" />
+                    <CheckBox x:Name="AutostartBox" Content="Start with Windows (minimised to tray)" />
+                    <CheckBox x:Name="CloseToTrayBox" Content="Closing the window keeps the app running in the tray" />
+                  </StackPanel>
+                </Border>
+                <Border Classes="panel">
+                  <StackPanel>
+                    <TextBlock Text="Key calibration" FontSize="16" FontWeight="SemiBold" />
+                    <TextBlock Classes="hint" Margin="0,6,0,8"
+                               Text="Teaches the app which signal each physical key sends. Run it once if a key on the diagram responds to the wrong physical key." />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                      <Button x:Name="CalibrateBtn" Content="Start calibration" />
+                      <Button x:Name="CalibrateSkipBtn" Content="Skip key" IsVisible="False" />
+                      <Button x:Name="ResetLayoutBtn" Content="Reset to factory layout" />
+                    </StackPanel>
+                    <TextBlock x:Name="CalibrateText" Margin="0,8,0,0" TextWrapping="Wrap" />
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+              <StackPanel Grid.Column="1" Spacing="12">
+                <Border Classes="panel">
+                  <StackPanel>
+                    <TextBlock Text="Direct mode setup (once)" FontSize="16" FontWeight="SemiBold" />
+                    <SelectableTextBlock FontSize="12" Foreground="#8E979C" TextWrapping="Wrap" Margin="0,6,0,0" xml:space="preserve">1. Download Zadig (zadig.akeo.ie) and run it with the keypad plugged in.
+2. Options → List All Devices.
+3. Pick the Tartarus entry ending in "(Interface 0)". The USB ID must read 1532 0201 00.
+4. Choose WinUSB as the target driver and press Replace Driver.
+5. Come back here; the status line should say "Direct mode: connected".
+
+If keys do nothing, look at the log below: it shows which interface is being read. Should it report nothing on key presses, repeat the steps for "(Interface 1)".
+
+To undo: Device Manager → Universal Serial Bus devices → the Tartarus entry → Uninstall device, tick "Attempt to remove the driver", then replug the keypad. It returns to being a normal keyboard.</SelectableTextBlock>
+                  </StackPanel>
+                </Border>
+                <Border Classes="panel">
+                  <StackPanel>
+                    <TextBlock Text="Log" FontSize="16" FontWeight="SemiBold" />
+                    <TextBox x:Name="LogBox" IsReadOnly="True" AcceptsReturn="True" Height="210" Margin="0,8,0,0" FontFamily="Consolas,monospace" FontSize="12" TextWrapping="Wrap" />
+                  </StackPanel>
+                </Border>
+              </StackPanel>
+            </Grid>
+          </ScrollViewer>
+        </TabItem>
+      </TabControl>
+    </Grid>
+
+    <Border Grid.Row="2" Background="#181B1D" Padding="18,6">
+      <TextBlock x:Name="StatusText" FontSize="12" Foreground="#8E979C" TextTrimming="CharacterEllipsis" />
+    </Border>
+  </Grid>
+</Window>
